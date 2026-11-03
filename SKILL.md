@@ -1,6 +1,6 @@
 ---
 name: agent-systems-engineering
-description: Design, implement, review, and extend persistent, event-driven, concurrent Agent runtimes and plugins. Use when building Agent frameworks, Harnesses, Orchestrators, event systems, task/session management, tool runtimes, plugin systems, durable execution, or proactive agents.
+description: Design, implement, review, and extend persistent, event-driven, concurrent Agent runtimes and plugins. Use when building Agent frameworks, Harnesses, Orchestrators, event systems, task/session management, tool runtimes, plugin systems, durable execution, or proactive agents. Before choosing a pattern, read references/REFERENCE-MAP.md and only the notes that match the problem.
 ---
 
 # Agent Systems Engineering
@@ -124,6 +124,20 @@ Run:
 - regression tests for token, latency, and task quality.
 
 Report what was tested, what was not, and what remains a prototype.
+
+### 6. Retrieve evidence before naming a pattern
+
+The sections below are the engineering constraints. `references/` is the evidence library. Do not load the whole library. Use `references/REFERENCE-MAP.md` as the index.
+
+1. Name the engineering problem before selecting a pattern. "Tasks must survive process restart" is a problem. "Use event sourcing" is a candidate answer.
+2. Open only the map rows that match the problem, then those notes. Stop when the failure mode and the cost are clear.
+3. For a significant architecture choice, compare at least two alternatives. One alternative should be the smallest mechanism that fits the current deployment, not only the best-known framework.
+4. State operational cost and the failure modes the choice still accepts: duplicate effects, lost messages, stale writers, replay nondeterminism, queue growth, or a second runtime.
+5. Use `references/design-cases/` and `references/frameworks/` to check assumptions. A framework note describes that system. It is not permission to copy its architecture.
+6. If the choice affects durability, delivery, authorization, scheduling bounds, or the plugin boundary, record it with `templates/design-decision-record.md` in the host repository.
+7. If a reference pattern conflicts with the constraints in this skill, write the conflict down and keep the constraint. Do not silently retcon the runtime.
+
+Significant choices also go through `templates/architecture-review.md`. Incidents and failed recovery drills use `templates/failure-analysis.md`.
 
 ---
 
@@ -595,7 +609,7 @@ Namespace all plugin-owned state by plugin ID and schema version. Provide migrat
 | Watchdog / Supervisor | External liveness and progress control loop |
 | Capability Security | Limit what a plugin, worker, or task can do |
 
-Do not adopt a pattern by name alone. State the failure mode it prevents and the cost it introduces.
+Do not adopt a pattern by name alone. State the failure mode it prevents and the cost it introduces. The table is only an index. Mechanisms, sources, and conflicts with these constraints are in `references/`, reached through `references/REFERENCE-MAP.md`.
 
 ## 11. Observability
 
@@ -721,5 +735,6 @@ When asked to design or implement a framework/plugin, produce:
 8. **Implementation plan**
 9. **Tests and acceptance criteria**
 10. **Known limitations and deferred work**
+11. **Decision record**, when the choice affects durability, delivery, authorization, scheduling bounds, or the plugin boundary. Use `templates/design-decision-record.md`. Name at least two alternatives, the evidence that was read, and any conflict with the constraints in this skill.
 
-Prefer small, testable increments. Avoid building a distributed platform before the use case requires one.
+Prefer small, testable increments. Avoid building a distributed platform before the use case requires one. Do not copy a framework's process model, history log, or actor lifecycle into the core when a narrower mechanism satisfies the problem.
